@@ -6,6 +6,7 @@ import time
 
 WS_URI        = "ws://127.0.0.1:56781"
 HTTP_ENDPOINT = "https://fleetshare.onrender.com/drone-position"
+HTTP_ENDPOINT_MISSION = "https://fleetshare.onrender.com/drone-mission"
 MIN_INTERVAL  = 5.0  # Intervalle minimum entre les envois en secondes
 
 last_send_time = 0.0
@@ -85,7 +86,16 @@ async def stream_positions():
                 if not msg:
                     continue
 
-                last_sysid = msg.get_srcSystem()
+                    # Récupération robuste du sysid
+                sysid = None
+                try:
+                    sysid = msg.get_srcSystem()
+                except Exception:
+                    pass
+                if not sysid and hasattr(msg, '_header') and hasattr(msg._header, 'srcSystem'):
+                    sysid = msg._header.srcSystem
+                if sysid:
+                    last_sysid = sysid
                 
                 # Début de la réception de mission
                 if msg.get_msgId() == mavutil.mavlink.MAVLINK_MSG_ID_MISSION_COUNT:
@@ -106,15 +116,18 @@ async def stream_positions():
                     # Si tous les items sont reçus, on envoie
                     if mission_expected_count > 0 and mission_received_count == mission_expected_count:
                         wp_str = " ".join([f"WP{i+1}: {lat},{lon}" for i, (lat, lon) in enumerate(waypoints)])
-                        payload = {"waypoints": wp_str}
+                        payload = {
+                            "waypoints": wp_str,
+                            "sysid": last_sysid  # Ajout du sysid ici
+                        }
                         try:
                             resp = requests.post(
-                                HTTP_ENDPOINT,
+                                HTTP_ENDPOINT_MISSION,
                                 json=payload,
                                 headers={"User-Agent": "PyFleet/1.0"}
                             )
                             if resp.status_code == 200:
-                                print(f"POST WP OK → {wp_str}")
+                                print(f"POST WP OK → {wp_str} sysid={last_sysid}")
                             else:
                                 print("Erreur HTTP WP :", resp.status_code, resp.text)
                         except Exception as e:
