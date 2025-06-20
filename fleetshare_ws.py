@@ -145,13 +145,12 @@ async def stream_positions():
                     last_lat = round(msg.lat * 1e-7, 7)
                     last_lon = round(msg.lon * 1e-7, 7)
                     last_yaw = round(msg.hdg * 0.01, 2)
-                    last_alt = 0
 
                 # VFR_HUD
                 if msg.get_msgId() == mavutil.mavlink.MAVLINK_MSG_ID_VFR_HUD:
                     last_groundspeed = round(msg.groundspeed, 2)
                     last_airspeed = round(msg.airspeed, 2)
-                    last_alt_vfr = round(msg.alt, 2) 
+                    last_alt = round(msg.alt, 2) 
                    
                 if msg.get_msgId() == mavutil.mavlink.MAVLINK_MSG_ID_WIND:
                     last_windspeed = round(msg.speed, 2)
@@ -202,7 +201,7 @@ async def stream_positions():
                             headers={"User-Agent": "PyFleet/1.0"}
                         )
                         if resp.status_code == 200:
-                            print(f"POST OK → lat={last_lat} lon={last_lon} yaw={last_yaw} alt={last_alt} groundspeed={last_groundspeed} airspeed={last_airspeed} sysid={last_sysid}")
+                            print(f"POST OK → lat={last_lat} lon={last_lon} yaw={last_yaw} alt={last_alt} groundspeed={last_groundspeed} airspeed={last_airspeed} windspeed={last_windspeed} sysid={last_sysid}")
                         else:
                             print("Erreur HTTP :", resp.status_code, resp.text)
                     except Exception as e:
