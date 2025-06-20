@@ -166,13 +166,13 @@ async def stream_positions():
                                 print("Erreur HTTP BATTERY :", resp.status_code, resp.text)
                         except Exception as e:
                             print("Exception lors du POST BATTERY :", e)
-                        now = asyncio.get_event_loop().time()
+            now = asyncio.get_event_loop().time()
             if now - last_send_time >= MIN_INTERVAL and last_lat is not None:
                 payload = {
                     "lat": last_lat,
                     "lon": last_lon,
                     "yaw": last_yaw,
-                    "alt": last_alt_vfr,         # Altitude VFR_HUD
+                    "alt": last_alt,         # Altitude VFR_HUD
                     "groundspeed": last_groundspeed,
                     "airspeed": last_airspeed,
                     "windspeed": last_windspeed, # Vitesse du vent WIND
