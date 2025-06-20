@@ -171,6 +171,7 @@ async def stream_positions():
             now = asyncio.get_event_loop().time()
             if now - last_send_time >= MIN_INTERVAL and last_lat is not None:
                 payload = {
+                    "timestamp": timestamp,
                     "lat": last_lat,
                     "lon": last_lon,
                     "yaw": last_yaw,
