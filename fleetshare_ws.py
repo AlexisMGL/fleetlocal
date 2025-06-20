@@ -191,23 +191,6 @@ async def stream_positions():
                         except Exception as e:
                             print("Exception lors du POST BATTERY :", e)
 
-                now = asyncio.get_event_loop().time()
-                if now - last_send_time >= MIN_INTERVAL and last_lat is not None:
-                    payload = {"lat": last_lat, "lon": last_lon, "yaw": last_yaw, "alt": last_alt, "groundspeed": last_groundspeed, "airspeed": last_airspeed, "sysid": last_sysid}
-                    try:
-                        resp = requests.post(
-                            HTTP_ENDPOINT,
-                            json=payload,
-                            headers={"User-Agent": "PyFleet/1.0"}
-                        )
-                        if resp.status_code == 200:
-                            print(f"POST OK → lat={last_lat} lon={last_lon} yaw={last_yaw} alt={last_alt} groundspeed={last_groundspeed} airspeed={last_airspeed} windspeed={last_windspeed} sysid={last_sysid}")
-                        else:
-                            print("Erreur HTTP :", resp.status_code, resp.text)
-                    except Exception as e:
-                        print("Exception lors du POST :", e)
-                    last_send_time = now
-
 async def main():
     while True:
         try:
