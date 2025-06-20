@@ -40,7 +40,7 @@ def extract_latlon(msg):
     return None, None
 
 async def stream_positions():
-    global last_send_time, last_lat, last_lon, last_yaw, last_alt, last_groundspeed, last_airspeed, last_sysid, waypoints
+    global last_send_time, last_lat, last_lon, last_yaw, last_alt, last_groundspeed, last_airspeed, last_sysid, waypoints, last_windspeed
     global mission_expected_count, mission_received_count
     async with websockets.connect(WS_URI) as ws:
         print("Connecté au WebSocket MAVLink (binaire).")
