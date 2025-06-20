@@ -16,6 +16,8 @@ last_yaw = None
 last_alt = None
 last_groundspeed = None
 last_airspeed = None
+last_alt_vfr = None
+last_windspeed = None
 last_sysid = None
 
 mission_expected_count = 0
@@ -54,9 +56,10 @@ async def stream_positions():
                         "lat": last_lat,
                         "lon": last_lon,
                         "yaw": last_yaw,
-                        "alt": last_alt,
+                        "alt": last_alt_vfr,         # Altitude VFR_HUD
                         "groundspeed": last_groundspeed,
                         "airspeed": last_airspeed,
+                        "windspeed": last_windspeed, # Vitesse du vent WIND
                         "sysid": last_sysid
                     }
                     try:
@@ -148,6 +151,10 @@ async def stream_positions():
                 if msg.get_msgId() == mavutil.mavlink.MAVLINK_MSG_ID_VFR_HUD:
                     last_groundspeed = round(msg.groundspeed, 2)
                     last_airspeed = round(msg.airspeed, 2)
+                    last_alt_vfr = round(msg.alt, 2) 
+                   
+                if msg.get_msgId() == mavutil.mavlink.MAVLINK_MSG_ID_WIND:
+                    last_windspeed = round(msg.speed, 2)
 
                 # HIGH_LATENCY2
                 if msg.get_msgId() == mavutil.mavlink.MAVLINK_MSG_ID_HIGH_LATENCY2:
