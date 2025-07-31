@@ -7,7 +7,7 @@ import time
 WS_URI        = "ws://127.0.0.1:56781"
 HTTP_ENDPOINT = "https://fleetshare.onrender.com/drone-position"
 HTTP_ENDPOINT_MISSION = "https://fleetshare.onrender.com/drone-mission"
-MIN_INTERVAL  = 5.0  # Intervalle minimum entre les envois en secondes
+MIN_INTERVAL  = 2.0  # Intervalle minimum entre les envois en secondes
 
 last_send_time = 0.0
 last_lat = None
@@ -145,29 +145,29 @@ async def stream_positions():
                     last_sysid = msg.get_srcSystem()
 
                 # BATTERY_STATUS
-                if msg.get_msgId() == mavutil.mavlink.MAVLINK_MSG_ID_BATTERY_STATUS:
-                    # On ne prend que Battery Monitor 1 (id=0)
-                    if hasattr(msg, "id") and msg.id == 0:
-                        payload = {
-                            "sysid": last_sysid,
-                            "battery_id": msg.id,
-                            "voltage": [v for v in msg.voltages if v != 65535],  # 65535 = valeur non utilisée
-                            "current_battery": msg.current_battery,  # en 10 mA
-                            "battery_remaining": msg.battery_remaining,  # en %
-                            "temperature": msg.temperature  # en cdegC
-                        }
-                        try:
-                            resp = requests.post(
-                                "https://fleetshare.onrender.com/battery",
-                                json=payload,
-                                headers={"User-Agent": "PyFleet/1.0"}
-                            )
-                            if resp.status_code == 200:
-                                print(f"POST BATTERY OK → {payload}")
-                            else:
-                                print("Erreur HTTP BATTERY :", resp.status_code, resp.text)
-                        except Exception as e:
-                            print("Exception lors du POST BATTERY :", e)
+                # if msg.get_msgId() == mavutil.mavlink.MAVLINK_MSG_ID_BATTERY_STATUS:
+                #     # On ne prend que Battery Monitor 1 (id=0)
+                #     if hasattr(msg, "id") and msg.id == 0:
+                #         payload = {
+                #             "sysid": last_sysid,
+                #             "battery_id": msg.id,
+                #             "voltage": [v for v in msg.voltages if v != 65535],  # 65535 = valeur non utilisée
+                #             "current_battery": msg.current_battery,  # en 10 mA
+                #             "battery_remaining": msg.battery_remaining,  # en %
+                #             "temperature": msg.temperature  # en cdegC
+                #         }
+                #         try:
+                #             resp = requests.post(
+                #                 "https://fleetshare.onrender.com/battery",
+                #                 json=payload,
+                #                 headers={"User-Agent": "PyFleet/1.0"}
+                #             )
+                #             if resp.status_code == 200:
+                #                 print(f"POST BATTERY OK → {payload}")
+                #             else:
+                #                 print("Erreur HTTP BATTERY :", resp.status_code, resp.text)
+                #         except Exception as e:
+                #             print("Exception lors du POST BATTERY :", e)
             now = asyncio.get_event_loop().time()
             if now - last_send_time >= MIN_INTERVAL and last_lat is not None:
                 payload = {
