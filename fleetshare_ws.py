@@ -1,3 +1,10 @@
+"""
+Ce script se connecte à un flux MAVLink via WebSocket et transmet périodiquement
+les données au serveur FleetShare.
+Créateur : AlexisMGL
+Dernière modification : 31 juillet 2025
+"""
+
 import asyncio
 import requests
 import websockets
