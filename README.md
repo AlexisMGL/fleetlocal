@@ -8,7 +8,7 @@ Deux méthodes permettent de récupérer ce dépôt :
 
 - **Cloner avec Git**
   ```bash
-  git clone https://github.com/<votre-utilisateur>/fleetlocal.git
+  git clone https://github.com/AlexisMGL/fleetlocal.git
   ```
 - **Télécharger l'archive ZIP depuis GitHub**
   Sur la page du dépôt, cliquez sur **Code** puis **Download ZIP**, puis décompressez l'archive.
