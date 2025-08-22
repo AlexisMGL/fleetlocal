@@ -2,6 +2,17 @@
 
 Ce dépôt contient le script `fleetshare_ws.py` permettant d'envoyer les données MAVLink vers mon serveur FleetShare 🚀.
 
+## Télécharger le projet 📥
+
+Deux méthodes permettent de récupérer ce dépôt :
+
+- **Cloner avec Git**
+  ```bash
+  git clone https://github.com/<votre-utilisateur>/fleetlocal.git
+  ```
+- **Télécharger l'archive ZIP depuis GitHub**
+  Sur la page du dépôt, cliquez sur **Code** puis **Download ZIP**, puis décompressez l'archive.
+
 ## Prérequis 📦
 
 - Python 3.8 ou supérieur installé sur votre machine. Vous pouvez le télécharger sur [python.org](https://www.python.org/downloads/).
@@ -14,16 +25,11 @@ Ce dépôt contient le script `fleetshare_ws.py` permettant d'envoyer les donné
    ```powershell
    cd chemin\vers\le\dossier\cloné
    ```
-3. (Optionnel) Créez un environnement virtuel pour isoler les dépendances :
-   ```powershell
-   python -m venv venv
-   .\venv\Scripts\Activate
-   ```
-4. Installez les dépendances définies dans `requirements.txt` :
+3. Installez les dépendances définies dans `requirements.txt` :
    ```powershell
    pip install -r requirements.txt
    ```
-5. Lancez le script depuis un terminal 🖥️:
+4. Lancez le script depuis un terminal 🖥️:
    ```powershell
    python fleetshare_ws.py
    ```
