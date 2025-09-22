@@ -58,3 +58,24 @@ Si le streamer est connecté lorsque le pilote envoie la commande « Lecture PN
 il récupère alors les *waypoints* de la mission et les affiche également sur
 l'interface web.
 
+
+
+
+## Execution automatique avec le Planificateur de taches Windows
+
+1. Ouvre `taskschd.msc` et cree une **Nouvelle tache** (par exemple "FleetShare WS").
+2. Onglet **Actions** :
+   - `Programme/script` -> `C:\Users\alexi\AppData\Local\Programs\Python\Python313\pythonw.exe` (ou ta version de Python).
+   - `Ajouter des arguments` -> `C:\Users\alexi\Desktop\AlexisMGL\fleetlocal\fleetshare_ws.py`.
+   - `Demarrer dans` -> `C:\Users\alexi\Desktop\AlexisMGL\fleetlocal`.
+3. Onglet **Declencheurs** :
+   - Ajoute "A l'ouverture de session" ou "Au demarrage" selon le besoin.
+   - Active "Recommencer toutes les 5 minutes" si tu veux qu'il se relance apres un arret.
+4. Onglet **Conditions** :
+   - Decoche "Demarrer la tache uniquement si l'ordinateur est sur secteur" pour l'executer sur batterie.
+5. Onglet **Parametres** :
+   - Coche "Autoriser l'execution a la demande" et laisse "Arreter la tache si elle s'execute plus de" desactive.
+6. Valide la tache puis clique sur **Executer** pour tester :
+   - La fenetre console n'apparait pas grace a `pythonw.exe`.
+   - Le script attend automatiquement que `MissionPlanner.exe` ou `GCSAM.exe` soit lance avant de commencer a envoyer les donnees, et se remet en attente si tu fermes ces programmes.
+
