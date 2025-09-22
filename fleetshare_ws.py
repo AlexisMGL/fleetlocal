@@ -10,11 +10,19 @@ import requests
 import websockets
 from pymavlink import mavutil
 import time
+import subprocess
 
 WS_URI        = "ws://127.0.0.1:56781"
 HTTP_ENDPOINT = "https://fleetshare.onrender.com/drone-position"
 HTTP_ENDPOINT_MISSION = "https://fleetshare.onrender.com/drone-mission"
 MIN_INTERVAL  = 2.0  # Intervalle minimum entre les envois en secondes
+
+REQUIRED_PROCESSES = (
+    "MissionPlanner.exe",
+    "GCSAM.exe",
+)
+PROCESS_CHECK_INTERVAL = 10  # seconds between process checks
+CREATE_NO_WINDOW = 0x08000000
 
 last_send_time = 0.0
 last_lat = None
@@ -35,6 +43,44 @@ mission_received_count = 0
 # Ajout pour la gestion des waypoints
 waypoints = []
 
+
+def is_process_running(process_name):
+    """Return True if the given Windows process is running."""
+    try:
+        result = subprocess.run(
+            ["tasklist", "/FI", f"IMAGENAME eq {process_name}"],
+            capture_output=True,
+            text=True,
+            creationflags=CREATE_NO_WINDOW,
+            check=False,
+        )
+    except Exception as exc:
+        print(f"Unable to check process {process_name}: {exc}")
+        return False
+    target = process_name.lower()
+    for line in result.stdout.splitlines():
+        if line.lower().startswith(target):
+            return True
+    return False
+
+
+def has_required_process_running():
+    return any(is_process_running(name) for name in REQUIRED_PROCESSES)
+
+
+async def wait_for_required_process():
+    waited = False
+    while not has_required_process_running():
+        if not waited:
+            print(f"En attente de MissionPlanner.exe ou GCSAM.exe... nouvelle verification dans {PROCESS_CHECK_INTERVAL}s.")
+        else:
+            print(f"Toujours en attente... prochaine verification dans {PROCESS_CHECK_INTERVAL}s.")
+        waited = True
+        await asyncio.sleep(PROCESS_CHECK_INTERVAL)
+    if waited:
+        print("Processus requis detecte, demarrage du streaming.")
+
+
 def is_waypoint(msg):
     # MAV_CMD_NAV_WAYPOINT = 16
     return hasattr(msg, "command") and msg.command == 16
@@ -51,11 +97,18 @@ def extract_latlon(msg):
 async def stream_positions():
     global last_send_time, last_lat, last_lon, last_yaw, last_alt, last_groundspeed, last_airspeed, last_position_sysid, waypoints, last_windspeed, timestamp
     global mission_expected_count, mission_received_count, last_mission_sysid
+
+    await wait_for_required_process()
+
     async with websockets.connect(WS_URI) as ws:
         print("Connecté au WebSocket MAVLink (binaire).")
         mav = mavutil.mavlink.MAVLink(None)
 
         while True:
+            if not has_required_process_running():
+                print("Processus requis absent. Suspension du streaming.")
+                break
+
             try:
                 raw = await asyncio.wait_for(ws.recv(), timeout=0.5)
             except asyncio.TimeoutError:
