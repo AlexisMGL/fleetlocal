@@ -58,3 +58,24 @@ Si le streamer est connecté lorsque le pilote envoie la commande « Lecture PN
 il récupère alors les *waypoints* de la mission et les affiche également sur
 l'interface web.
 
+
+## Planificateur de taches Windows
+
+<details>
+<summary><strong>Configurer un lancement automatique</strong></summary>
+
+> [!TIP]
+> Utilisez pythonw.exe pour eviter qu'une fenetre de console ne s'affiche a chaque ouverture de session.
+
+1. Ouvrir le Planificateur de taches Windows et choisir **Creer une tache...**.
+2. Dans l'onglet **Declencheurs**, ajouter le declencheur **A l'ouverture d'une session**.
+3. Dans l'onglet **Actions**, creer une action **Demarrer un programme** :
+   - Programme/script : `C:\Chemin\vers\pythonw.exe`
+   - Arguments : `c:/Chemin/vers/fleetshare_ws.py`
+4. Dans l'onglet **Conditions**, decocher **Demarrer uniquement si l'ordinateur est branche sur le secteur**.
+5. Enregistrer la tache puis utiliser **Executer** pour tester immediatement le streamer.
+
+- [ ] Mettre a jour le chemin de `pythonw.exe` si Python est installe ailleurs.
+- [ ] Verifier que le script s'execute sans erreur apres la connexion.
+
+</details>
